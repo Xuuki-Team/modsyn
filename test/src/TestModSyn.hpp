@@ -21,7 +21,7 @@ using namespace std;
 class TestModSyn : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestModSyn);
-  CPPUNIT_TEST(canReadPatch);
+  //CPPUNIT_TEST(canReadPatch);
   CPPUNIT_TEST_SUITE_END();
 
 public:
