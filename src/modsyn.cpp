@@ -13,7 +13,8 @@ ModSyn::ModSyn(const char* patch,
   this->patch= patch;
   this->name= name;
 
-  this->log= fopen("logs/modsyn.log", "w");
+  // segmentation fault if log dir isn't created, the app doesn't yet create 
+  this->log= fopen("log/modsyn.log", "w");
   fprintf(this->log,"Starting Modular Synthesiser.\n");
   this->oscs= (OSCMOD *)malloc(MAXMODS *
                                  sizeof(OSCMOD));
@@ -27,25 +28,25 @@ void ModSyn::processPatch() {
   this->file= fopen(this->patch, "r");
   this->fileOut= fopen(this->name, "w");
 
-  if (file == NULL) {
+  if (this->file == NULL) {
     printf("Failed to open file: %s\n", this->patch);
     return;
   }
 
-  //print_header(this->fileOut);
-  //readPatchFile();
+  print_header(this->fileOut);
+  readPatchFile();
 
-  //this->printInstr(this->fileOut);
-  //int i;
-  //for(i =0; i < osc_count; i++){
-  //  print_osc(oscs[i],this->fileOut);      
-  //}
+  this->printInstr(this->fileOut);
+  int i;
+  for(i =0; i < osc_count; i++){
+    print_osc(oscs[i],this->fileOut);      
+  }
 
-  //for(i =0; i < mix_count; i++){
-  //  print_mix(mixes[i],this->fileOut);      
-  //}
-  //print_score(10.0,this->fileOut);
-  //fclose(this->fileOut);
+  for(i =0; i < mix_count; i++){
+    print_mix(mixes[i],this->fileOut);      
+  }
+  print_score(10.0,this->fileOut);
+  fclose(this->fileOut);
 }
 
 void ModSyn::readPatchFile(){
