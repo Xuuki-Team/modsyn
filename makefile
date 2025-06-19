@@ -4,7 +4,7 @@ TESTMODSYN        = test/src/main.cpp  test/src/TestModSyn.cpp src/modsyn.cpp
 CSOUND  = -lcsound64 -lcsnd6
 INCLUDE = -I/usr/include/csound/
 CPPUNIT = -lcppunit
-CC	= g++
+CC	= g++ -ggdb
 
 all: modsyn testmodsyn
 
