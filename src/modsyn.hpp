@@ -30,6 +30,8 @@ class ModSyn{
   private:
    const char* patch;
    const char* name;
+   const char* midiChannel;
+   
    FILE *log; 
    char modname[64];
    OSCMOD *oscs;
@@ -46,6 +48,9 @@ class ModSyn{
       ModSyn();
       ModSyn(const char* patch,
              const char* name); 
+      ModSyn(const char* patch,
+             const char* name,
+             const char* midiChannel);
       ~ModSyn();
       void processPatch();
       void read_osc(OSCMOD *oscs, 
