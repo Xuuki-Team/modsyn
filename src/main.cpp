@@ -8,16 +8,18 @@
 
 int main(int argc, char **argv){
 
-  if (argc != 3) {
-      printf("Usage: %s <patch> <name>\n", argv[0]);
+  if (argc != 4) {
+      printf("Usage: %s <patch> <name> <midi channel>\n", argv[0]);
       return 1;
   }
 
   const char* patch = argv[1];
   const char* name = argv[2];
+  const char* midiChannel = argv[3];
 
   ModSyn modsyn= ModSyn(patch,
-                        name);
+                        name,
+                        midiChannel);
   modsyn.processPatch();
   
   return 0;
