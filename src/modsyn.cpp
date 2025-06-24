@@ -22,6 +22,22 @@ ModSyn::ModSyn(const char* patch,
                                  sizeof(MIXOUT));
 };
 
+ModSyn::ModSyn(const char* patch,
+               const char* name,
+               const char* midiChannel){
+  this->patch= patch;
+  this->name= name;
+  this->midiChannel= midiChannel;
+
+  // segmentation fault if log dir isn't created, the app doesn't yet create 
+  this->log= fopen("log/modsyn.log", "w");
+  fprintf(this->log,"Starting Modular Synthesiser.\n");
+  this->oscs= (OSCMOD *)malloc(MAXMODS *
+                                 sizeof(OSCMOD));
+  this->mixes = (MIXOUT *)malloc(MAXMODS * 
+                                 sizeof(MIXOUT));
+};
+
 ModSyn::~ModSyn(){};
 void ModSyn::processPatch() {
   fprintf(this->log,"Processing patch\n");
@@ -151,16 +167,18 @@ void ModSyn::print_header(FILE* outputFile){
   fprintf(outputFile,"<CsoundSynthesizer>\n");
   fprintf(outputFile,"<CsOptions>\n\n");
   fprintf(outputFile,"</CsOptions>\n");
+  fprintf(outputFile,"<CsInstruments>\n\n");
+  fprintf(outputFile,"massign   %s, 1\n\n", this->midiChannel);
   fprintf(outputFile,"sr = 48000\n");
   fprintf(outputFile,"kr = 4800\n");
   fprintf(outputFile,"ksmps = 10\n");
   fprintf(outputFile,"nchnls = 1\n");
-  fprintf(outputFile,"<CsInstruments>\n\n");
 }
 
 void ModSyn::printInstr(FILE* outputFile){
   fprintf(outputFile,"\tinstr 1\n");
-  fprintf(outputFile,"\tkfrq cpsmidib 1\n");
+  fprintf(outputFile,"iamp = ampmidi(10000)\n");
+  fprintf(outputFile,"kfrq = cpsmidib()\n");
   fprintf(outputFile,"isine = 1\n");
   fprintf(outputFile,"itriangle = 2\n");
   fprintf(outputFile,"isawtooth = 3\n");
