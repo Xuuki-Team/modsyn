@@ -1,1 +1,1 @@
-log dir needs to exists atm and be made manually or theres a segentation fault
+log dir needs to exists (atm added manually) or theres a segentation fault

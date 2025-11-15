@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 using namespace std;
 
@@ -13,12 +15,29 @@ ModSyn::ModSyn(const char* patch,
   this->patch= patch;
   this->name= name;
 
-  // segmentation fault if log dir isn't created, the app doesn't yet create 
-  this->log= fopen("log/modsyn.log", "w");
+  // Declare and define log file
+  const char* homeDir = getenv("HOME");
+  std::string logDir = std::string(homeDir) + "/.modsyn/logs";
+
+  // Create the directory if it doesn't exist
+  struct stat st;
+  if (stat(logDir.c_str(), &st) != 0) {
+    mkdir(logDir.c_str(), 0755);
+  }
+
+  std::string logFile = logDir + "/modsyn.log";
+  this->log = fopen(logFile.c_str(), "w");
+
+  if (this->log == nullptr) {
+    cerr << "Failed to open log file: " << logFile << endl;
+    exit(EXIT_FAILURE);
+  }
+
   fprintf(this->log,"Starting Modular Synthesiser.\n");
+
   this->oscs= (OSCMOD *)malloc(MAXMODS *
                                  sizeof(OSCMOD));
-  this->mixes = (MIXOUT *)malloc(MAXMODS * 
+  this->mixes = (MIXOUT *)malloc(MAXMODS *
                                  sizeof(MIXOUT));
 };
 
@@ -29,12 +48,30 @@ ModSyn::ModSyn(const char* patch,
   this->name= name;
   this->midiChannel= midiChannel;
 
-  // segmentation fault if log dir isn't created, the app doesn't yet create 
-  this->log= fopen("log/modsyn.log", "w");
+  // Inside your constructor
+  const char* homeDir = getenv("HOME");
+  std::string modsynDir = std::string(homeDir) + "/.modsyn";
+  std::string logDir = modsynDir + "/logs";
+
+  // Create the directory if it doesn't exist
+  struct stat st;
+  if (stat(logDir.c_str(), &st) != 0) {
+    mkdir(logDir.c_str(), 0755);
+  }
+
+  std::string logFile = logDir + "/modsyn.log";
+  this->log = fopen(logFile.c_str(), "w");
+
+  if (this->log == nullptr) {
+    cerr << "Failed to open log file: " << logFile << endl;
+    exit(EXIT_FAILURE);
+  }
+
   fprintf(this->log,"Starting Modular Synthesiser.\n");
+
   this->oscs= (OSCMOD *)malloc(MAXMODS *
                                  sizeof(OSCMOD));
-  this->mixes = (MIXOUT *)malloc(MAXMODS * 
+  this->mixes = (MIXOUT *)malloc(MAXMODS *
                                  sizeof(MIXOUT));
 };
 
@@ -55,11 +92,11 @@ void ModSyn::processPatch() {
   this->printInstr(this->fileOut);
   int i;
   for(i =0; i < osc_count; i++){
-    print_osc(oscs[i],this->fileOut);      
+    print_osc(oscs[i],this->fileOut);
   }
 
   for(i =0; i < mix_count; i++){
-    print_mix(mixes[i],this->fileOut);      
+    print_mix(mixes[i],this->fileOut);
   }
   print_score(10.0,this->fileOut);
   fclose(this->fileOut);
@@ -72,10 +109,10 @@ void ModSyn::readPatchFile(){
   while (fscanf(file, "%s", modname) != EOF) {
     if (!strcmp(modname, "OSC")) {
       read_osc(oscs, osc_count++,file);
-    } else if(! strcmp(modname, "MIXOUT")){ 
+    } else if(! strcmp(modname, "MIXOUT")){
       read_mix(mixes, mix_count++,file);
     } else {
-      fprintf(stderr, "%s is an unknown module\n", 
+      fprintf(stderr, "%s is an unknown module\n",
               modname);
     }
   }
@@ -85,10 +122,10 @@ void ModSyn::read_osc(OSCMOD *oscs, int count, FILE* file){
  fscanf(file,"%s %s %s %s %s %s %s",
  oscs[count].sig_out,
  oscs[count].frequency,
- oscs[count].waveform, 
- oscs[count].sig_am, 
- oscs[count].sig_fm, 
- oscs[count].omin, 
+ oscs[count].waveform,
+ oscs[count].sig_am,
+ oscs[count].sig_fm,
+ oscs[count].omin,
  oscs[count].omax);
  if( count >= MAXMODS ){
    fprintf(stderr,"Number of oscillators has exceeded maximum: %d\n", MAXMODS);
@@ -146,10 +183,10 @@ void ModSyn::print_osc(OSCMOD osc, FILE* outputFile){
     mo2 = (omax - omin) / 2.0;
     fprintf(outputFile
             ,"%s = %s + (%f*%s + %f)\n",
-            osc.sig_out, 
-            osc.omin, 
-            mo2, 
-            osc.sig_out, 
+            osc.sig_out,
+            osc.omin,
+            mo2,
+            osc.sig_out,
             mo2
     );
   }
