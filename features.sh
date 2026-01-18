@@ -7,6 +7,5 @@
 #   When I successfully run `./bin/modsyn patches/mpatch3 sound-design/feature.csd 4`
 #   Then `sound-design/feature.csd` should exist
 
-
 ./bin/modsyn patches/mpatch3 sound-design/feature.csd 4
 cat sound-design/feature.csd
